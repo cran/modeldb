@@ -36,19 +36,23 @@ simple_kmeans_db <- function(df,
                           initial_kmeans = NULL,
                           safeguard_file = "kmeans.csv",
                           verbose = TRUE) {
-  vars <- exprs(...)
+  vars <- enquos(...)
   
-  if(length(vars) > 0) df <- select(df, !!! vars)
-  df <- filter_all(df, all_vars(!is.na(.)))
+  if(length(vars) > 0) {
+      f_df <- select(df, !!! vars)
+    } else {
+      vars <- syms(colnames(df))
+      f_df <- df
+    }
+  
+  f_df <- filter_all(f_df, all_vars(!is.na(.)))
 
   if (!is.null(initial_kmeans)) {
     centroids <- initial_kmeans
   } else {
-    centroids <- df %>%
-      head(centers) %>%
-      collect()
+    centroids <- head(f_df, centers)
+    centroids <- collect(centroids)
   }
-  
   
   if(verbose){
     pb <- progress::progress_bar$new(
@@ -61,19 +65,19 @@ simple_kmeans_db <- function(df,
   
   for (iteration in 1:max_repeats) {
     prev_centroids <- centroids
-    new_centroids <- calculate_centers(df, centroids, centers)
+    new_centroids <- calculate_centers(df, centroids, centers, vars)
 
-    centroids <- new_centroids %>%
-      group_by(center) %>%
-      summarise_all("mean", na.rm = TRUE) %>%
-      select(-center) %>%
-      collect()
+    centroids_db <- select(new_centroids, !!! vars, center)
+    centroids_db <- group_by(centroids_db, center)
+    centroids_db <- summarise_all(centroids_db, "mean", na.rm = TRUE) 
+    
+    centroids <- select(centroids_db, -center)
+    centroids <- collect(centroids)
 
     if (!is.null(safeguard_file)){ 
       sfg <- file.path(tempdir(), safeguard_file)
       write.csv(centroids, sfg, row.names = FALSE) 
     }
-    
     variance <- (
       round(
         abs(sum(prev_centroids) - sum(centroids)) / sum(prev_centroids),
@@ -83,18 +87,21 @@ simple_kmeans_db <- function(df,
     if (verbose) pb$tick(tokens = list(var = variance))
     if (all(prev_centroids == centroids)) break()
   }
-  list(
-    tbl = new_centroids,
-    centers = centroids
-  )
+  centroids_db <- rename_all(centroids_db, funs(paste0("k_", .))) 
+  right_join(
+    centroids_db,
+    new_centroids, 
+    by = c("k_center" = "center")
+    )
 }
 
-calculate_centers <- function(df, center_df, centers) {
+calculate_centers <- function(df, center_df, centers, vars) {
   center_names <- paste0("center_", 1:centers)
-  fields <- length(colnames(df))
+  
+  fields <- length(vars)
 
-  f_dist <- center_df %>%
-    imap(~{
+  f_dist <- imap(
+    center_df, ~{
       map2(
         .x, .y,
         function(x, y) expr((!! x) - (!! sym(y)))
@@ -102,37 +109,32 @@ calculate_centers <- function(df, center_df, centers) {
     })
 
   f_inside <- function(curr_center) {
-    1:fields %>%
-      map(~{
+      fi <- map(1:fields, ~{
         f <- pluck(f_dist, .x, curr_center)
         expr((((!! f)) * ((!! f))))
-      }) %>%
-      reduce(function(l, r) expr((!! l) + (!! r)))
+      }) 
+      reduce(fi, function(l, r) expr((!! l) + (!! r)))
   }
 
-  km <- 1:centers %>%
-    map(~expr(sqrt(!! f_inside(.x)))) %>%
-    set_names(center_names)
+  km <- map(1:centers, ~expr(sqrt(!! f_inside(.x))))
+  km <- set_names(km, center_names)
 
-  all <- center_names %>%
-    map(~{
+  all <- map(center_names, ~{
       comp <- map2(.x, center_names, function(x, y)
         if (x != y) {
           expr((!! sym(x)) < (!! sym(y)))
         } else {
           expr((!! sym(x)) >= (!! sym(y)))
-        }) %>%
-        reduce(function(l, r) expr((!! l) & (!! r)))
-      c(comp, .x) %>%
-        reduce(function(l, r) expr((!! l) ~ !! (r)))
-    }) %>%
-    flatten()
+        }) 
+      comp <- reduce(comp, function(l, r) expr((!! l) & (!! r)))
+      reduce(c(comp, .x) ,function(l, r) expr((!! l) ~ !! (r)))
+    }) 
+  all <- flatten(all)
 
   comp <- expr(case_when(!!! all))
 
-  df %>%
-    mutate(!!! km) %>%
-    mutate(center = !! comp) %>%
-    filter(!is.na(center)) %>%
-    select(-contains("center_"))
+  res <- mutate(df, !!! km) 
+  res <- mutate(res, center = !! comp) 
+  res <- filter(res, !is.na(center)) 
+  select(res, -contains("center_"))
 }

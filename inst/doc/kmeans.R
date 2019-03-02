@@ -1,10 +1,11 @@
-## ----setup, include=FALSE------------------------------------------------
-knitr::opts_chunk$set(echo = TRUE)
-
+## ----setup, include = FALSE----------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 library(dplyr)
 library(purrr)
 library(rlang)
-library(readr)
 library(nycflights13)
 
 ## ------------------------------------------------------------------------
@@ -25,10 +26,7 @@ km <- db_flights %>%
 km$centers
 
 ## ------------------------------------------------------------------------
-head(km$tbl, 10)
-
-## ------------------------------------------------------------------------
-dbplyr::remote_query(km$tbl)
+dbplyr::remote_query(km)
 
 ## ------------------------------------------------------------------------
 km <- db_flights %>%
@@ -36,18 +34,5 @@ km <- db_flights %>%
 
 ## ------------------------------------------------------------------------
 km <- db_flights %>%
-  simple_kmeans_db(dep_time, distance, initial_kmeans = read_csv(file.path(tempdir(), "kmeans.csv")))
-
-## ------------------------------------------------------------------------
-km$tbl <- collect(km$tbl) # ONLY USE THIS STEP IF WORKING WITH SQLITE
-
-## ---- fig.width=10, fig.height=10----------------------------------------
-library(ggplot2)
-
-km$tbl %>%
-  plot_kmeans(dep_time, distance)
-
-## ---- fig.width=10, fig.height=10----------------------------------------
-km$tbl %>%
-  plot_kmeans(dep_time, distance, resolution = 30)
+  simple_kmeans_db(dep_time, distance, initial_kmeans = read.csv(file.path(tempdir(), "kmeans.csv")))
 
