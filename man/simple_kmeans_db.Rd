@@ -31,7 +31,7 @@ calculations, expressed in dplyr formulas until an the optimal
 centers are found.
 }
 \details{
-Because each cycle is an indiependent 'dplyr' operation, or SQL operation if using a remote source,
+Because each cycle is an independent 'dplyr' operation, or SQL operation if using a remote source,
 the latest centroid data frame is saved to the parent environment in case the process needs to be
 canceled and then restarted at a later point.  Passing the `current_kmeans` as the `initial_kmeans`
 will allow the operation to pick up where it left off.
@@ -39,9 +39,8 @@ will allow the operation to pick up where it left off.
 \examples{
 library(dplyr)
 
-x <- mtcars \%>\%
-  simple_kmeans_db(mpg, qsec, wt)
-  
-x$centers
+mtcars \%>\%
+  simple_kmeans_db(mpg, qsec, wt) \%>\%
+  glimpse()
 
 }

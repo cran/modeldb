@@ -16,7 +16,7 @@
 #' 
 #' The linear_regression_db() function only calls one of three unexported functions. 
 #' The function used is determined by the number of independent variables.  This is
-#' so any model of one or two variables can use a simplier formula, which in turn
+#' so any model of one or two variables can use a simpler formula, which in turn
 #' will have less SQL overhead.
 #'
 #' @examples
@@ -60,6 +60,7 @@ linear_regression_db <- function(df, y_var = NULL, sample_size = NULL, auto_coun
       auto_count = auto_count
     )
   }
+  class(m) <- c("modeldb_lm", class(m))
   m
 }
 
@@ -178,7 +179,7 @@ mlr <- function(df, ..., y_var, sample_size = NULL, auto_count = FALSE) {
   ests_df <- summarise(df, !!!all_fm)
   ests_df <- collect(ests_df)
 
-  ests_list <- as_list(ests_df)
+  ests_list <- as.list(ests_df)
 
   xm_names <- names(all_f)[!grepl(y_text, names(all_f))]
   xm <- prepare_matrix(ests_list, xm_names, length(x_vars))

@@ -15,7 +15,7 @@
 #' @param verbose Indicates if the progress bar will be displayed during the model's fitting.
 #'
 #' @details
-#' Because each cycle is an indiependent 'dplyr' operation, or SQL operation if using a remote source,
+#' Because each cycle is an independent 'dplyr' operation, or SQL operation if using a remote source,
 #' the latest centroid data frame is saved to the parent environment in case the process needs to be
 #' canceled and then restarted at a later point.  Passing the `current_kmeans` as the `initial_kmeans`
 #' will allow the operation to pick up where it left off. 
@@ -23,10 +23,9 @@
 #' @examples
 #' library(dplyr)
 #'
-#' x <- mtcars %>%
-#'   simple_kmeans_db(mpg, qsec, wt)
-#'   
-#' x$centers
+#' mtcars %>%
+#'   simple_kmeans_db(mpg, qsec, wt) %>%
+#'   glimpse()
 #'
 #' @export
 simple_kmeans_db <- function(df,
@@ -87,7 +86,7 @@ simple_kmeans_db <- function(df,
     if (verbose) pb$tick(tokens = list(var = variance))
     if (all(prev_centroids == centroids)) break()
   }
-  centroids_db <- rename_all(centroids_db, funs(paste0("k_", .))) 
+  centroids_db <- rename_all(centroids_db, ~paste0("k_", .))
   right_join(
     centroids_db,
     new_centroids, 

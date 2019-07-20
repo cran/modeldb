@@ -12,7 +12,7 @@
 
 <meta name="author" content="Edgar Ruiz" />
 
-<meta name="date" content="2019-03-02" />
+<meta name="date" content="2019-07-19" />
 
 <title>K Means models</title>
 
@@ -37,7 +37,7 @@ a.sourceLine { text-indent: -1em; padding-left: 1em; }
 pre.numberSource a.sourceLine
   { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(title);
+  { content: attr(data-line-number);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
     border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
@@ -291,6 +291,9 @@ code > span.al { color: #ff0000; font-weight: bold; }
 code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
+
+
+
 </head>
 
 <body>
@@ -299,8 +302,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">K Means models</h1>
-<h4 class="author"><em>Edgar Ruiz</em></h4>
-<h4 class="date"><em>2019-03-02</em></h4>
+<h4 class="author">Edgar Ruiz</h4>
+<h4 class="date">2019-07-19</h4>
 
 
 
@@ -311,53 +314,53 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="example-setup" class="section level2">
 <h2>Example setup</h2>
 <p>In this example, a simple <code>RSQlite</code> database will be use to load the <code>flights</code> data from the <code>nycflights13</code> library.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb1-2" title="2"></a>
-<a class="sourceLine" id="cb1-3" title="3">con &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw">dbConnect</span>(RSQLite<span class="op">::</span><span class="kw">SQLite</span>(), <span class="dt">path =</span> <span class="st">&quot;:memory:&quot;</span>)</a>
-<a class="sourceLine" id="cb1-4" title="4">RSQLite<span class="op">::</span><span class="kw">initExtension</span>(con)</a>
-<a class="sourceLine" id="cb1-5" title="5"></a>
-<a class="sourceLine" id="cb1-6" title="6">db_flights &lt;-<span class="st"> </span><span class="kw">copy_to</span>(con, nycflights13<span class="op">::</span>flights, <span class="st">&quot;flights&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">con &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw">dbConnect</span>(RSQLite<span class="op">::</span><span class="kw">SQLite</span>(), <span class="dt">path =</span> <span class="st">&quot;:memory:&quot;</span>)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">RSQLite<span class="op">::</span><span class="kw">initExtension</span>(con)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">db_flights &lt;-<span class="st"> </span><span class="kw">copy_to</span>(con, nycflights13<span class="op">::</span>flights, <span class="st">&quot;flights&quot;</span>)</a></code></pre></div>
 </div>
 <div id="running-kmeans-clustering" class="section level2">
 <h2>Running Kmeans clustering</h2>
 <p>The function <code>simple_kmeans_db()</code> can use with local data, or a remote table, such as the <code>db_flights</code> variable that is a pointer to the “flights” table inside the SQLite database. When piping to the function, the only other required arguments are two or more fields separated by comma. Because it uses ‘tidyeval’, the variable name auto-completion will work.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(modeldb)</a>
-<a class="sourceLine" id="cb2-2" title="2"></a>
-<a class="sourceLine" id="cb2-3" title="3">km &lt;-<span class="st"> </span>db_flights <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="st">  </span><span class="kw">simple_kmeans_db</span>(dep_time, distance)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(modeldb)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">km &lt;-<span class="st"> </span>db_flights <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="st">  </span><span class="kw">simple_kmeans_db</span>(dep_time, distance)</a></code></pre></div>
 <p>The <code>simple_kmeans_db()</code> function uses a progress bar to show you the current cycle, the maximum cycles it’s expected to run, the current difference between the previous cycle and the current cycle, and the running time. The loop will stop once it wither has two matching consecutive cycles, or if it reaches the maximum number of cycles, as determined by the <code>max_repeats</code> argument.</p>
 <p>The final <strong>centers</strong> are are stored in the <code>centers</code> variable of the returned object</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">km<span class="op">$</span>centers</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="co">#&gt; NULL</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">km<span class="op">$</span>centers</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">#&gt; NULL</span></a></code></pre></div>
 <p>The latest results are stored in the <code>tbl</code> variable of the returned object. The type of the returned table will match the type of the original source, so if it is a remote source, such as database table, then <code>tbl</code> will be a class <code>tbl_sql</code>. This will allow us to do two thing:</p>
 <ul>
 <li>View the SQL statement that was used to find the final centers:</li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">dbplyr<span class="op">::</span><span class="kw">remote_query</span>(km)</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="co">#&gt; &lt;SQL&gt; SELECT `RHS`.`center` AS `k_center`, `LHS`.`k_dep_time` AS `k_dep_time`, `LHS`.`k_distance` AS `k_distance`, `RHS`.`year` AS `year`, `RHS`.`month` AS `month`, `RHS`.`day` AS `day`, `RHS`.`dep_time` AS `dep_time`, `RHS`.`sched_dep_time` AS `sched_dep_time`, `RHS`.`dep_delay` AS `dep_delay`, `RHS`.`arr_time` AS `arr_time`, `RHS`.`sched_arr_time` AS `sched_arr_time`, `RHS`.`arr_delay` AS `arr_delay`, `RHS`.`carrier` AS `carrier`, `RHS`.`flight` AS `flight`, `RHS`.`tailnum` AS `tailnum`, `RHS`.`origin` AS `origin`, `RHS`.`dest` AS `dest`, `RHS`.`air_time` AS `air_time`, `RHS`.`distance` AS `distance`, `RHS`.`hour` AS `hour`, `RHS`.`minute` AS `minute`, `RHS`.`time_hour` AS `time_hour`</span></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="co">#&gt; FROM (SELECT `center` AS `k_center`, `dep_time` AS `k_dep_time`, `distance` AS `k_distance`</span></a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="co">#&gt; FROM (SELECT `center`, AVG(`dep_time`) AS `dep_time`, AVG(`distance`) AS `distance`</span></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="co">#&gt; FROM (SELECT `dep_time`, `distance`, `center`</span></a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="co">#&gt; FROM (SELECT *</span></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="co">#&gt; FROM (SELECT `year`, `month`, `day`, `dep_time`, `sched_dep_time`, `dep_delay`, `arr_time`, `sched_arr_time`, `arr_delay`, `carrier`, `flight`, `tailnum`, `origin`, `dest`, `air_time`, `distance`, `hour`, `minute`, `time_hour`, `center_1`, `center_2`, `center_3`, CASE</span></a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="co">#&gt; WHEN (`center_1` &gt;= `center_1` AND `center_1` &lt; `center_2` AND `center_1` &lt; `center_3`) THEN (&#39;center_1&#39;)</span></a>
-<a class="sourceLine" id="cb4-9" title="9"><span class="co">#&gt; WHEN (`center_2` &lt; `center_1` AND `center_2` &gt;= `center_2` AND `center_2` &lt; `center_3`) THEN (&#39;center_2&#39;)</span></a>
-<a class="sourceLine" id="cb4-10" title="10"><span class="co">#&gt; WHEN (`center_3` &lt; `center_1` AND `center_3` &lt; `center_2` AND `center_3` &gt;= `center_3`) THEN (&#39;center_3&#39;)</span></a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="co">#&gt; </span><span class="re">END</span><span class="co"> AS `center`</span></a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="co">#&gt; FROM (SELECT `year`, `month`, `day`, `dep_time`, `sched_dep_time`, `dep_delay`, `arr_time`, `sched_arr_time`, `arr_delay`, `carrier`, `flight`, `tailnum`, `origin`, `dest`, `air_time`, `distance`, `hour`, `minute`, `time_hour`, SQRT(((889.757881651311 - `dep_time`) * (889.757881651311 - `dep_time`)) + ((791.286862996562 - `distance`) * (791.286862996562 - `distance`))) AS `center_1`, SQRT(((1391.08534916316 - `dep_time`) * (1391.08534916316 - `dep_time`)) + ((2355.04462033144 - `distance`) * (2355.04462033144 - `distance`))) AS `center_2`, SQRT(((1745.74853136521 - `dep_time`) * (1745.74853136521 - `dep_time`)) + ((718.043515631104 - `distance`) * (718.043515631104 - `distance`))) AS `center_3`</span></a>
-<a class="sourceLine" id="cb4-13" title="13"><span class="co">#&gt; FROM `flights`))</span></a>
-<a class="sourceLine" id="cb4-14" title="14"><span class="co">#&gt; WHERE (NOT(((`center`) IS NULL)))))</span></a>
-<a class="sourceLine" id="cb4-15" title="15"><span class="co">#&gt; GROUP BY `center`)) AS `LHS`</span></a>
-<a class="sourceLine" id="cb4-16" title="16"><span class="co">#&gt; RIGHT JOIN (SELECT `year`, `month`, `day`, `dep_time`, `sched_dep_time`, `dep_delay`, `arr_time`, `sched_arr_time`, `arr_delay`, `carrier`, `flight`, `tailnum`, `origin`, `dest`, `air_time`, `distance`, `hour`, `minute`, `time_hour`, `center`</span></a>
-<a class="sourceLine" id="cb4-17" title="17"><span class="co">#&gt; FROM (SELECT `year`, `month`, `day`, `dep_time`, `sched_dep_time`, `dep_delay`, `arr_time`, `sched_arr_time`, `arr_delay`, `carrier`, `flight`, `tailnum`, `origin`, `dest`, `air_time`, `distance`, `hour`, `minute`, `time_hour`, `center_1`, `center_2`, `center_3`, CASE</span></a>
-<a class="sourceLine" id="cb4-18" title="18"><span class="co">#&gt; WHEN (`center_1` &gt;= `center_1` AND `center_1` &lt; `center_2` AND `center_1` &lt; `center_3`) THEN (&#39;center_1&#39;)</span></a>
-<a class="sourceLine" id="cb4-19" title="19"><span class="co">#&gt; WHEN (`center_2` &lt; `center_1` AND `center_2` &gt;= `center_2` AND `center_2` &lt; `center_3`) THEN (&#39;center_2&#39;)</span></a>
-<a class="sourceLine" id="cb4-20" title="20"><span class="co">#&gt; WHEN (`center_3` &lt; `center_1` AND `center_3` &lt; `center_2` AND `center_3` &gt;= `center_3`) THEN (&#39;center_3&#39;)</span></a>
-<a class="sourceLine" id="cb4-21" title="21"><span class="co">#&gt; </span><span class="re">END</span><span class="co"> AS `center`</span></a>
-<a class="sourceLine" id="cb4-22" title="22"><span class="co">#&gt; FROM (SELECT `year`, `month`, `day`, `dep_time`, `sched_dep_time`, `dep_delay`, `arr_time`, `sched_arr_time`, `arr_delay`, `carrier`, `flight`, `tailnum`, `origin`, `dest`, `air_time`, `distance`, `hour`, `minute`, `time_hour`, SQRT(((889.757881651311 - `dep_time`) * (889.757881651311 - `dep_time`)) + ((791.286862996562 - `distance`) * (791.286862996562 - `distance`))) AS `center_1`, SQRT(((1391.08534916316 - `dep_time`) * (1391.08534916316 - `dep_time`)) + ((2355.04462033144 - `distance`) * (2355.04462033144 - `distance`))) AS `center_2`, SQRT(((1745.74853136521 - `dep_time`) * (1745.74853136521 - `dep_time`)) + ((718.043515631104 - `distance`) * (718.043515631104 - `distance`))) AS `center_3`</span></a>
-<a class="sourceLine" id="cb4-23" title="23"><span class="co">#&gt; FROM `flights`))</span></a>
-<a class="sourceLine" id="cb4-24" title="24"><span class="co">#&gt; WHERE (NOT(((`center`) IS NULL)))) AS `RHS`</span></a>
-<a class="sourceLine" id="cb4-25" title="25"><span class="co">#&gt; ON (`LHS`.`k_center` = `RHS`.`center`)</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">dbplyr<span class="op">::</span><span class="kw">remote_query</span>(km)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">#&gt; &lt;SQL&gt; SELECT `RHS`.`center` AS `k_center`, `LHS`.`k_dep_time` AS `k_dep_time`, `LHS`.`k_distance` AS `k_distance`, `RHS`.`year` AS `year`, `RHS`.`month` AS `month`, `RHS`.`day` AS `day`, `RHS`.`dep_time` AS `dep_time`, `RHS`.`sched_dep_time` AS `sched_dep_time`, `RHS`.`dep_delay` AS `dep_delay`, `RHS`.`arr_time` AS `arr_time`, `RHS`.`sched_arr_time` AS `sched_arr_time`, `RHS`.`arr_delay` AS `arr_delay`, `RHS`.`carrier` AS `carrier`, `RHS`.`flight` AS `flight`, `RHS`.`tailnum` AS `tailnum`, `RHS`.`origin` AS `origin`, `RHS`.`dest` AS `dest`, `RHS`.`air_time` AS `air_time`, `RHS`.`distance` AS `distance`, `RHS`.`hour` AS `hour`, `RHS`.`minute` AS `minute`, `RHS`.`time_hour` AS `time_hour`</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt; FROM (SELECT `center` AS `k_center`, `dep_time` AS `k_dep_time`, `distance` AS `k_distance`</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; FROM (SELECT `center`, AVG(`dep_time`) AS `dep_time`, AVG(`distance`) AS `distance`</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt; FROM (SELECT `dep_time`, `distance`, `center`</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt; FROM (SELECT *</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">#&gt; FROM (SELECT `year`, `month`, `day`, `dep_time`, `sched_dep_time`, `dep_delay`, `arr_time`, `sched_arr_time`, `arr_delay`, `carrier`, `flight`, `tailnum`, `origin`, `dest`, `air_time`, `distance`, `hour`, `minute`, `time_hour`, `center_1`, `center_2`, `center_3`, CASE</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co">#&gt; WHEN (`center_1` &gt;= `center_1` AND `center_1` &lt; `center_2` AND `center_1` &lt; `center_3`) THEN ('center_1')</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="co">#&gt; WHEN (`center_2` &lt; `center_1` AND `center_2` &gt;= `center_2` AND `center_2` &lt; `center_3`) THEN ('center_2')</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="co">#&gt; WHEN (`center_3` &lt; `center_1` AND `center_3` &lt; `center_2` AND `center_3` &gt;= `center_3`) THEN ('center_3')</span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">#&gt; </span><span class="re">END</span><span class="co"> AS `center`</span></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co">#&gt; FROM (SELECT `year`, `month`, `day`, `dep_time`, `sched_dep_time`, `dep_delay`, `arr_time`, `sched_arr_time`, `arr_delay`, `carrier`, `flight`, `tailnum`, `origin`, `dest`, `air_time`, `distance`, `hour`, `minute`, `time_hour`, SQRT(((889.757881651311 - `dep_time`) * (889.757881651311 - `dep_time`)) + ((791.286862996562 - `distance`) * (791.286862996562 - `distance`))) AS `center_1`, SQRT(((1391.08534916316 - `dep_time`) * (1391.08534916316 - `dep_time`)) + ((2355.04462033144 - `distance`) * (2355.04462033144 - `distance`))) AS `center_2`, SQRT(((1745.74853136521 - `dep_time`) * (1745.74853136521 - `dep_time`)) + ((718.043515631104 - `distance`) * (718.043515631104 - `distance`))) AS `center_3`</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co">#&gt; FROM `flights`))</span></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; WHERE (NOT(((`center`) IS NULL)))))</span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt; GROUP BY `center`)) AS `LHS`</span></a>
+<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co">#&gt; RIGHT JOIN (SELECT `year`, `month`, `day`, `dep_time`, `sched_dep_time`, `dep_delay`, `arr_time`, `sched_arr_time`, `arr_delay`, `carrier`, `flight`, `tailnum`, `origin`, `dest`, `air_time`, `distance`, `hour`, `minute`, `time_hour`, `center`</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17"><span class="co">#&gt; FROM (SELECT `year`, `month`, `day`, `dep_time`, `sched_dep_time`, `dep_delay`, `arr_time`, `sched_arr_time`, `arr_delay`, `carrier`, `flight`, `tailnum`, `origin`, `dest`, `air_time`, `distance`, `hour`, `minute`, `time_hour`, `center_1`, `center_2`, `center_3`, CASE</span></a>
+<a class="sourceLine" id="cb4-18" data-line-number="18"><span class="co">#&gt; WHEN (`center_1` &gt;= `center_1` AND `center_1` &lt; `center_2` AND `center_1` &lt; `center_3`) THEN ('center_1')</span></a>
+<a class="sourceLine" id="cb4-19" data-line-number="19"><span class="co">#&gt; WHEN (`center_2` &lt; `center_1` AND `center_2` &gt;= `center_2` AND `center_2` &lt; `center_3`) THEN ('center_2')</span></a>
+<a class="sourceLine" id="cb4-20" data-line-number="20"><span class="co">#&gt; WHEN (`center_3` &lt; `center_1` AND `center_3` &lt; `center_2` AND `center_3` &gt;= `center_3`) THEN ('center_3')</span></a>
+<a class="sourceLine" id="cb4-21" data-line-number="21"><span class="co">#&gt; </span><span class="re">END</span><span class="co"> AS `center`</span></a>
+<a class="sourceLine" id="cb4-22" data-line-number="22"><span class="co">#&gt; FROM (SELECT `year`, `month`, `day`, `dep_time`, `sched_dep_time`, `dep_delay`, `arr_time`, `sched_arr_time`, `arr_delay`, `carrier`, `flight`, `tailnum`, `origin`, `dest`, `air_time`, `distance`, `hour`, `minute`, `time_hour`, SQRT(((889.757881651311 - `dep_time`) * (889.757881651311 - `dep_time`)) + ((791.286862996562 - `distance`) * (791.286862996562 - `distance`))) AS `center_1`, SQRT(((1391.08534916316 - `dep_time`) * (1391.08534916316 - `dep_time`)) + ((2355.04462033144 - `distance`) * (2355.04462033144 - `distance`))) AS `center_2`, SQRT(((1745.74853136521 - `dep_time`) * (1745.74853136521 - `dep_time`)) + ((718.043515631104 - `distance`) * (718.043515631104 - `distance`))) AS `center_3`</span></a>
+<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="co">#&gt; FROM `flights`))</span></a>
+<a class="sourceLine" id="cb4-24" data-line-number="24"><span class="co">#&gt; WHERE (NOT(((`center`) IS NULL)))) AS `RHS`</span></a>
+<a class="sourceLine" id="cb4-25" data-line-number="25"><span class="co">#&gt; ON (`LHS`.`k_center` = `RHS`.`center`)</span></a></code></pre></div>
 </div>
 <div id="under-the-hood" class="section level2">
 <h2>Under the hood</h2>
@@ -369,11 +372,11 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>The<code>simple_kmeans_db()</code> approach of using multiple and consecutive SQL queries to find the optimal centers, additionally, in KMeans clustering, it matters the order in which the each set of centers is passed. This creates an imperative to find a way to cache the current centers used in a long running job, in case the job is canceled or fails. Starting from the centers that were calculated last, will mean that re-starting the job will not being from “0”, but from a more advanced, read closer, set of centers.</p>
 <p>The safeguard implemented in this function is trough a file, called <em>kmeans.csv</em>. Each cycle will update the file. The file name can be changed by modifying the <code>safeguard_file</code> argument. Setting the argument to NULL will turn off the safeguard. The file will be saved to the temporary directory of the R session..</p>
 <p>In this example we will set the <code>max_repats</code> to 10, so as to artificially avoid finding the optimal means</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">km &lt;-<span class="st"> </span>db_flights <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="st">  </span><span class="kw">simple_kmeans_db</span>(dep_time, distance, <span class="dt">max_repeats =</span> <span class="dv">10</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">km &lt;-<span class="st"> </span>db_flights <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="st">  </span><span class="kw">simple_kmeans_db</span>(dep_time, distance, <span class="dt">max_repeats =</span> <span class="dv">10</span>)</a></code></pre></div>
 <p>In the next run, the “kmeans.csv” file is passed as the <code>initial_kmeans</code> argument. This will make <code>simple_kmeans_db()</code> use those centers as the starting point:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">km &lt;-<span class="st"> </span>db_flights <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="st">  </span><span class="kw">simple_kmeans_db</span>(dep_time, distance, <span class="dt">initial_kmeans =</span> <span class="kw">read.csv</span>(<span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;kmeans.csv&quot;</span>)))</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">km &lt;-<span class="st"> </span>db_flights <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="st">  </span><span class="kw">simple_kmeans_db</span>(dep_time, distance, <span class="dt">initial_kmeans =</span> <span class="kw">read.csv</span>(<span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;kmeans.csv&quot;</span>)))</a></code></pre></div>
 <p>The second run took 7 cycles to complete, which adds up to the 17 cycles that it initially took in the first example at the top of this article.</p>
 </div>
 

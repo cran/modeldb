@@ -1,3 +1,9 @@
+# modeldb 0.2.0
+
+- Adds `as_parsed_model()` support for regression models
+
+- Fixes compatability issues with `rlang` and `dplyr` 
+
 # modeldb 0.1.2
 
 - Removes pipes and other dplyr dependencies from internal `mlr()` function

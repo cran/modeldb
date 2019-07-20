@@ -1,6 +1,12 @@
 
 # modeldb <img src="man/figures/logo.png" align="right" alt="" width="120" />
 
+[![Build
+Status](https://travis-ci.org/tidymodels/modeldb.svg?branch=master)](https://travis-ci.org/tidymodels/modeldb)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/modeldb)](https://cran.r-project.org/package=modeldb)
+[![Coverage
+Status](https://img.shields.io/codecov/c/github/tidymodels/modeldb/master.svg)](https://codecov.io/github/tidymodels/modeldb?branch=master)
+
 Fit models inside the database. **`modeldb` works with most databases
 back-ends** because it leverages `dplyr` and `dbplyr` for the final SQL
 translation of the algorithm. It currently supports:
@@ -14,13 +20,14 @@ translation of the algorithm. It currently supports:
 Install the CRAN version with:
 
 ``` r
-install.packages("modeldb")
+# install.packages("modeldb")
 ```
 
 The development version is available using `devtools` as follows:
 
 ``` r
-devtools::install_github("edgararuiz/modeldb")
+# install.packages("remotes")
+# remotes::install_github("tidymodels/modeldb")
 ```
 
 ## Linear regression
