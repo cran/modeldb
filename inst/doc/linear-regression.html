@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <meta name="author" content="Edgar Ruiz" />
 
-<meta name="date" content="2019-07-19" />
+<meta name="date" content="2020-02-06" />
 
 <title>Linear regression models</title>
 
@@ -96,7 +96,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -303,7 +303,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Linear regression models</h1>
 <h4 class="author">Edgar Ruiz</h4>
-<h4 class="date">2019-07-19</h4>
+<h4 class="date">2020-02-06</h4>
 
 
 
@@ -345,7 +345,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb3-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(arr_delay, origin) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw">add_dummy_variables</span>(origin, <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&quot;EWR&quot;</span>, <span class="st">&quot;JFK&quot;</span>, <span class="st">&quot;LGA&quot;</span>))</a>
 <a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; # Source:   lazy query [?? x 3]</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; # Database: sqlite 3.22.0 []</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; # Database: sqlite 3.30.1 []</span></a>
 <a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt;    arr_delay origin_JFK origin_LGA</span></a>
 <a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt;        &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;</span></a>
 <a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt;  1        11          0          0</span></a>
@@ -425,6 +425,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb9-11" data-line-number="11"><span class="co">#&gt; 1         -3.92   0.0132       -0.00000275      -10.1      -8.05</span></a></code></pre></div>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
