@@ -1,6 +1,6 @@
-eb6b25d3b014b433fff61967ff12e496 *DESCRIPTION
+c92e1e6c82cbe882005fb341d351d808 *DESCRIPTION
 c87508d3747950b45c0bc65cc5f441bd *NAMESPACE
-bee37114062a189bb925427addd4a1e8 *NEWS.md
+c2b2f41a7554269e1637192004d34bac *NEWS.md
 70db9d39b43e71637791e6db65bd75cb *R/as-parsed-model.R
 9a3ab003c42f723f685c7c7bfe5f0543 *R/kmeans-viz.R
 fbb5cd60a588cb9ba6499d80c5a2e7da *R/kmeans.R
@@ -11,15 +11,15 @@ b4433442b3287bf724b27c59a8729b46 *README.md
 4caa7e1d159dd5aa1cc152f68d63aa68 *build/vignette.rds
 59b8fbf5b9a254960f23f1fe6514ebd5 *inst/doc/kmeans.R
 b660070acadcc992689b4e399d695ee3 *inst/doc/kmeans.Rmd
-21a024be7f0f59c4323e245ffaa7ca40 *inst/doc/kmeans.html
+031ed24703b9f77a5cfd92ddf10f5247 *inst/doc/kmeans.html
 cb6ccf00fc0c9f1c6d3bb3f529595e0a *inst/doc/linear-regression.R
 5749ec24334c66fbb4135d13e6f4ef5b *inst/doc/linear-regression.Rmd
-43db1371de2828e546dfc00e485854fd *inst/doc/linear-regression.html
+bbf257cad1b05de3a2db4361c1f42f97 *inst/doc/linear-regression.html
 684648965a5546ba670504c2aef57cf8 *man/add_dummy_variables.Rd
 1cfa3e5fb8e4dc912806f756083b97e0 *man/as_parsed_model.modeldb_lm.Rd
 70cac23bd9510b7070cab86fc1e194b9 *man/figures/logo.png
 d3ad1edc086b7a86f6ce66dccd952d12 *man/linear_regression_db.Rd
-dd43d785120836297a35fea1cd0d655e *man/modeldb-package.Rd
+02db8466d530560271b5ab250fe7387e *man/modeldb-package.Rd
 5dd31a85a0853940f3716ec4bc419387 *man/plot_kmeans.Rd
 4fa05fd003c9835091777f239e5cddcb *man/reexports.Rd
 1c47d7c01b20cb59b2da65aa7bb45d08 *man/simple_kmeans_db.Rd
