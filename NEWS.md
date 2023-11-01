@@ -1,3 +1,7 @@
+# modeldb 0.3.0
+
+- Fixes compatability issues with `dplyr` 
+
 # modeldb 0.2.3
 
 * Re-licensed package from GPL-3 to MIT. All copyright holders are RStudio employees and give consent.

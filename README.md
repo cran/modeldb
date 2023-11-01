@@ -1,8 +1,7 @@
 
 # modeldb <img src="man/figures/logo.png" align="right" alt="" width="120" />
 
-[![R build
-status](https://github.com/tidymodels/modeldb/workflows/R-CMD-check/badge.svg)](https://github.com/tidymodels/modeldb/actions)
+[![R-CMD-check](https://github.com/tidymodels/modeldb/workflows/R-CMD-check/badge.svg)](https://github.com/tidymodels/modeldb/actions)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/modeldb)](https://CRAN.R-project.org/package=modeldb)
 [![Codecov test
 coverage](https://codecov.io/gh/tidymodels/modeldb/branch/main/graph/badge.svg)](https://app.codecov.io/gh/tidymodels/modeldb?branch=main)
@@ -121,7 +120,7 @@ Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
 
 -   For questions and discussions about tidymodels packages, modeling,
-    and machine learning, please [post on RStudio
+    and machine learning, please [post on Posit
     Community](https://community.rstudio.com/new-topic?category_id=15&tags=tidymodels,question).
 
 -   If you think you have encountered a bug, please [submit an

@@ -22,7 +22,7 @@ db_flights <- copy_to(con, nycflights13::flights, "flights")
 # Create a simple sample
 db_sample <- db_flights %>%
   filter(!is.na(arr_time)) %>%
-  head(20000) 
+  head(20000)
 
 ## -----------------------------------------------------------------------------
 db_sample %>%
@@ -56,19 +56,19 @@ db_sample %>%
 ## -----------------------------------------------------------------------------
 db_sample %>%
   mutate(distanceXarr_time = distance * arr_time) %>%
-  select(arr_delay, distanceXarr_time) %>% 
+  select(arr_delay, distanceXarr_time) %>%
   linear_regression_db(arr_delay, sample_size = 20000)
 
 ## -----------------------------------------------------------------------------
 db_sample %>%
   mutate(distanceXarr_time = distance * arr_time) %>%
-  select(arr_delay, distance, arr_time, distanceXarr_time) %>% 
+  select(arr_delay, distance, arr_time, distanceXarr_time) %>%
   linear_regression_db(arr_delay, sample_size = 20000)
 
 ## -----------------------------------------------------------------------------
 remote_model <- db_sample %>%
   mutate(distanceXarr_time = distance * arr_time) %>%
-  select(arr_delay, dep_time, distanceXarr_time, origin) %>% 
+  select(arr_delay, dep_time, distanceXarr_time, origin) %>%
   add_dummy_variables(origin, values = origins) %>%
   linear_regression_db(y_var = arr_delay, sample_size = 20000)
 
