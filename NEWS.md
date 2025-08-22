@@ -1,3 +1,7 @@
+# modeldb 0.3.1
+
+- Fixes compatability issues with `ggplot2` 
+
 # modeldb 0.3.0
 
 - Fixes compatability issues with `dplyr` 

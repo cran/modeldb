@@ -1,6 +1,6 @@
 Package: modeldb
 Title: Fits Models Inside the Database
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: c(
     person("Edgar", "Ruiz", , "edgar@posit.co", role = "aut"),
     person("Max", "Kuhn", , "max@posit.co", role = c("aut", "cre"))
@@ -21,11 +21,11 @@ VignetteBuilder: knitr
 Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2023-10-31 23:10:27 UTC; max
+Packaged: 2025-08-22 16:28:20 UTC; max
 Author: Edgar Ruiz [aut],
   Max Kuhn [aut, cre]
 Maintainer: Max Kuhn <max@posit.co>
 Repository: CRAN
-Date/Publication: 2023-11-01 14:30:02 UTC
+Date/Publication: 2025-08-22 17:10:08 UTC
